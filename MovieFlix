@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix - Regional Movies App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #e50914;
+        }
+        
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .search-container input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+        }
+        
+        .search-container button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff0000, #ff7f00);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .search-container button:hover {
+            transform: scale(1.05);
+        }
+        
+        .categories {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            scrollbar-width: thin;
+        }
+        
+        .categories::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .categories::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        
+        .category {
+            padding: 12px 25px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .category:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .category.active {
+            background: linear-gradient(45deg, #ff0000, #ff7f00);
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        .video-container {
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            margin-bottom: 30px;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+        }
+        
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .video-info p {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .video-stats {
+            display: flex;
+            gap: 20px;
+            color: #aaa;
+        }
+        
+        .video-list {
+            max-height: 800px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-right: 10px;
+        }
+        
+        .video-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .video-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        
+        .video-item {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .video-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .video-thumb {
+            width: 160px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .video-details {
+            padding: 10px 10px 10px 0;
+            flex: 1;
+        }
+        
+        .video-details h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-details p {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .content-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .content-warning.active {
+            display: flex;
+        }
+        
+        .content-warning h2 {
+            font-size: 2.5rem;
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+        
+        .content-warning p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .content-warning button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff0000, #ff7f00);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-warning button:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #aaa;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 1.5rem;
+        }
+        
+        .load-more {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff0000, #ff7f00);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .load-more:hover {
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-list {
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .video-item {
+                flex-direction: column;
+            }
+            
+            .video-thumb {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <h1>MovieFlix</h1>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search for movies...">
+                <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+            </div>
+        </header>
+        
+        <div class="categories">
+            <div class="category active" data-category="all">All</div>
+            <div class="category" data-category="hindi">Hindi</div>
+            <div class="category" data-category="bollywood">Bollywood</div>
+            <div class="category" data-category="tollywood">Tollywood</div>
+            <div class="category" data-category="tamil">Tamil</div>
+            <div class="category" data-category="hindi-dubbed">Hindi Dubbed</div>
+            <div class="category" data-category="south">South Movies</div>
+            <div class="category" data-category="trending">Trending</div>
+            <div class="category" data-category="songs">Songs</div>
+            <div class="category" data-category="comedy">Comedy</div>
+            <div class="category" data-category="hollywood">Hollywood</div>
+            <div class="category" data-category="oriya">Oriya</div>
+            <div class="category" data-category="bhojpuri">Bhojpuri</div>
+            <div class="category" data-category="bangali">Bangali</div>
+            <div class="category" data-category="nepali">Nepali</div>
+            <div class="category" data-category="punjabi">Punjabi</div>
+            <div class="category" data-category="marathi">Marathi</div>
+            <div class="category" data-category="chhattisgarhi">Chhattisgarhi</div>
+            <div class="category" data-category="malayalam">Malayalam</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="featured-video">
+                <div class="video-container">
+                    <div class="video-wrapper">
+                        <iframe id="main-video" src="https://www.youtube.com/embed/n4t2mZqypyo?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h2 id="video-title">Bhool Bhulaiyaa 2 - Official Trailer | Kartik Aaryan, Kiara Advani</h2>
+                        <p id="video-description">Bhool Bhulaiyaa 2 is an upcoming Indian Hindi-language horror comedy film directed by Anees Bazmee. It is a standalone sequel to the 2007 film Bhool Bhulaiyaa.</p>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> <span id="video-views">25M</span> Views</span>
+                            <span><i class="fas fa-thumbs-up"></i> <span id="video-likes">850K</span> Likes</span>
+                            <span><i class="fas fa-calendar"></i> <span id="video-date">Mar 22, 2022</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-list-container">
+                <h3>Recommended Movies</h3>
+                <div class="video-list" id="video-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading videos...
+                    </div>
+                </div>
+                <button class="load-more" id="load-more">Load More</button>
+            </div>
+        </div>
+        
+        <div class="content-warning" id="content-warning">
+            <h2>Content Blocked</h2>
+            <p>This content has been blocked because it may contain inappropriate material that doesn't meet our community guidelines. Please select another video.</p>
+            <button id="understand-btn">I Understand</button>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 MovieFlix - YouTube Movies App. All rights reserved.</p>
+            <p>This content is embedded from YouTube and is subject to YouTube's Terms of Service</p>
+        </div>
+    </div>
+
+    <script>
+        // YouTube API key
+        const API_KEY = 'AIzaSyB4avTnoYO8cYNn1k8cqoIz72D9NMxVYgM';
+        
+        // Channel IDs for different categories
+        const CHANNELS = {
+            bollywood: 'UCq-Fj5jknLsUf-MWSy4_brA', // T-Series
+            hindi: 'UCG5Aj7h4oQrTGSPZrvqg+Q', // Sony Music India
+            tollywood: 'UC_7eWL2h2MDNBgQqRfUa1vw', // Aditya Music
+            tamil: 'UCQFW2XGg0cLv6tWsN4aBcgg', // Sony Music South
+            songs: 'UC9Z5sOT3yQkL3bLfEckuReg', // Zee Music Company
+            comedy: 'UC9Z5sOT3yQkL3bLfEckuReg', // Zee Music Company
+            hollywood: 'UCqECaJ8Gagnn7YCbPEzWH6g', // Universal Pictures
+            oriya: 'UCbLtKpgC1gRG3hxbf6lzoxw', // Olly Kannada
+            bhojpuri: 'UCW9d4n7q8k0zW1kgOLXXSHw', // Wave Music
+            bangali: 'UCZ1fHk+1U6g2AJbktZQc4_w', // SVF Music
+            nepali: 'UCW9d4n7q8k0zW1kgOLXXSHw', // Wave Music
+            punjabi: 'UCW9d4n7q8k0zW1kgOLXXSHw', // Wave Music
+            marathi: 'UCW9d4n7q8k0zW1kgOLXXSHw', // Wave Music
+            chhattisgarhi: 'UCW9d4n7q8k0zW1kgOLXXSHw', // Wave Music
+            malayalam: 'UCW9d4n7q8k0zW1kgOLXXSHw' // Wave Music
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const categories = document.querySelectorAll('.category');
+            const mainVideo = document.getElementById('main-video');
+            const videoTitle = document.getElementById('video-title');
+            const videoDescription = document.getElementById('video-description');
+            const videoViews = document.getElementById('video-views');
+            const videoLikes = document.getElementById('video-likes');
+            const videoDate = document.getElementById('video-date');
+            const contentWarning = document.getElementById('content-warning');
+            const understandBtn = document.getElementById('understand-btn');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const videoList = document.getElementById('video-list');
+            const loadMoreBtn = document.getElementById('load-more');
+            
+            // Blocked videos (simulated)
+            const blockedVideos = ['mY7fea2labc', 'sW6TfomhD8I'];
+            
+            // Initialize the player
+            let player;
+            let currentVideoId = 'n4t2mZqypyo';
+            let nextPageToken = '';
+            let currentCategory = 'all';
+            let currentSearchQuery = '';
+            
+            // Load YouTube IFrame API
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+            // Initialize player when API is ready
+            window.onYouTubeIframeAPIReady = function() {
+                player = new YT.Player('main-video', {
+                    events: {
+                        'onStateChange': onPlayerStateChange,
+                        'onError': onPlayerError
+                    }
+                });
+            };
+            
+            function onPlayerStateChange(event) {
+                // Handle player state changes if needed
+            }
+            
+            function onPlayerError(error) {
+                console.error('YouTube Player Error:', error);
+                contentWarning.classList.add('active');
+            }
+            
+            // Load videos for the default category
+            loadVideosByCategory('all');
+            
+            // Category filtering
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    categories.forEach(c => c.classList.remove('active'));
+                    category.classList.add('active');
+                    
+                    const categoryName = category.getAttribute('data-category');
+                    currentCategory = categoryName;
+                    currentSearchQuery = '';
+                    nextPageToken = '';
+                    loadVideosByCategory(categoryName);
+                });
+            });
+            
+            // Load videos by category
+            function loadVideosByCategory(category, pageToken = '') {
+                videoList.innerHTML = pageToken ? videoList.innerHTML : '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading videos...</div>';
+                
+                if (category === 'all') {
+                    // Load popular videos
+                    fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=12&regionCode=IN&pageToken=${pageToken}&key=${API_KEY}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            nextPageToken = data.nextPageToken || '';
+                            displayVideos(data.items);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching popular videos:', error);
+                            videoList.innerHTML = '<p>Error loading videos. Please try again later.</p>';
+                        });
+                } else if (CHANNELS[category]) {
+                    // Load videos from specific channel
+                    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNELS[category]}&maxResults=12&order=date&type=video&pageToken=${pageToken}&key=${API_KEY}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            nextPageToken = data.nextPageToken || '';
+                            const videoIds = data.items.map(item => item.id.videoId).join(',');
+                            return fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&key=${API_KEY}`);
+                        })
+                        .then(response => response.json())
+                        .then(data => displayVideos(data.items))
+                        .catch(error => {
+                            console.error('Error fetching channel videos:', error);
+                            videoList.innerHTML = '<p>Error loading videos. Please try again later.</p>';
+                        });
+                } else {
+                    // Search for videos by category name
+                    const query = currentSearchQuery || `${category} movies`;
+                    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&maxResults=12&type=video&pageToken=${pageToken}&key=${API_KEY}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            nextPageToken = data.nextPageToken || '';
+                            const videoIds = data.items.map(item => item.id.videoId).join(',');
+                            return fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&key=${API_KEY}`);
+                        })
+                        .then(response => response.json())
+                        .then(data => displayVideos(data.items))
+                        .catch(error => {
+                            console.error('Error searching videos:', error);
+                            videoList.innerHTML = '<p>Error loading videos. Please try again later.</p>';
+                        });
+                }
+            }
+            
+            // Display videos in the list
+            function displayVideos(videos) {
+                if (nextPageToken) {
+                    loadMoreBtn.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+                
+                // Clear loading message if it's the first load
+                if (!nextPageToken) {
+                    videoList.innerHTML = '';
+                }
+                
+                videos.forEach(video => {
+                    const videoId = video.id;
+                    const snippet = video.snippet;
+                    const stats = video.statistics;
+                    
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+                    videoItem.setAttribute('data-video', videoId);
+                    videoItem.setAttribute('data-title', snippet.title);
+                    
+                    videoItem.innerHTML = `
+                        <img src="${snippet.thumbnails.medium.url}" alt="${snippet.title}" class="video-thumb">
+                        <div class="video-details">
+                            <h3>${snippet.title}</h3>
+                            <p>${snippet.channelTitle} • ${formatNumber(stats ? stats.viewCount : 0)} views</p>
+                        </div>
+                    `;
+                    
+                    videoItem.addEventListener('click', () => {
+                        playVideo(videoId, snippet.title, snippet.description, stats);
+                    });
+                    
+                    videoList.appendChild(videoItem);
+                });
+            }
+            
+            // Play a video
+            function playVideo(videoId, title, description, stats) {
+                // Check if video is blocked
+                if (blockedVideos.includes(videoId)) {
+                    contentWarning.classList.add('active');
+                    return;
+                }
+                
+                currentVideoId = videoId;
+                
+                // Update player source
+                if (player && player.loadVideoById) {
+                    player.loadVideoById(videoId);
+                } else {
+                    // Fallback if player isn't ready
+                    mainVideo.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+                }
+                
+                // Update video info
+                videoTitle.textContent = title;
+                videoDescription.textContent = description || 'No description available.';
+                
+                if (stats) {
+                    videoViews.textContent = formatNumber(stats.viewCount);
+                    videoLikes.textContent = formatNumber(stats.likeCount);
+                }
+                
+                // Set a random date for demonstration
+                const randomDate = new Date();
+                randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 365));
+                videoDate.textContent = randomDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Close content warning
+            understandBtn.addEventListener('click', () => {
+                contentWarning.classList.remove('active');
+            });
+            
+            // Search functionality
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            function performSearch() {
+                const query = searchInput.value.trim();
+                
+                if (query === '') return;
+                
+                currentSearchQuery = query;
+                currentCategory = 'search';
+                nextPageToken = '';
+                videoList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching videos...</div>';
+                
+                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}+movie&maxResults=12&type=video&key=${API_KEY}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        nextPageToken = data.nextPageToken || '';
+                        const videoIds = data.items.map(item => item.id.videoId).join(',');
+                        return fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&key=${API_KEY}`);
+                    })
+                    .then(response => response.json())
+                    .then(data => displayVideos(data.items))
+                    .catch(error => {
+                        console.error('Error searching videos:', error);
+                        videoList.innerHTML = '<p>Error searching videos. Please try again later.</p>';
+                    });
+                
+                // Reset categories
+                categories.forEach(c => c.classList.remove('active'));
+            }
+            
+            // Load more videos
+            loadMoreBtn.addEventListener('click', () => {
+                if (currentCategory === 'search') {
+                    // Load more search results
+                    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentSearchQuery)}+movie&maxResults=12&type=video&pageToken=${nextPageToken}&key=${API_KEY}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            nextPageToken = data.nextPageToken || '';
+                            const videoIds = data.items.map(item => item.id.videoId).join(',');
+                            return fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&key=${API_KEY}`);
+                        })
+                        .then(response => response.json())
+                        .then(data => displayVideos(data.items))
+                        .catch(error => {
+                            console.error('Error loading more videos:', error);
+                        });
+                } else {
+                    // Load more category videos
+                    loadVideosByCategory(currentCategory, nextPageToken);
+                }
+            });
+            
+            // Format large numbers
+            function formatNumber(num) {
+                if (!num) return '0';
+                
+                if (num >= 1000000000) {
+                    return (num / 1000000000).toFixed(1) + 'B';
+                } else if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num;
+            }
+        });
+    </script>
+</body>
+</html>
